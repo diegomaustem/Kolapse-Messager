@@ -56,12 +56,45 @@ $app->get('/listPayments', function (Request $request, Response $response, $args
   }
 });
 
-$app->post('/makePayment', function (Request $request, Response $response, $args) {
-    $payment = json_decode($request->getBody(), true);
-    
-    $response->getBody()->write(json_encode($payment));
+$app->post('/makePayment', function (Request $request, Response $response, array $args) {
+  $data = json_decode($request->getBody(), true);
 
-    return $response;
+  $query = "INSERT INTO payments (name, card_number, validity, date, security_code, value, status, email) VALUES (:name, :card_number, :validity, :date, :security_code, :value, :status, :email)";
+
+  try {
+    $dataBaseConnectionInstance = new Database();
+    $connection = $dataBaseConnectionInstance->openConnect();
+    $statament  = $connection->prepare($query);
+
+    $statament->bindParam(':name', $data['name']);
+    $statament->bindParam(':card_number', $data['card_number']);
+    $statament->bindParam(':validity', $data['validity']);
+    $statament->bindParam(':date', $data['date']);
+    $statament->bindParam(':security_code', $data['security_code']);
+    $statament->bindParam(':value', $data['value']);
+    $statament->bindParam(':status', $data['status']);
+    $statament->bindParam(':email', $data['email']);
+
+    $resultQuery = $statament->execute();
+
+    $dataBaseConnectionInstance->closeConnect();
+
+    if($resultQuery === true) {
+      $response->getBody()->write("Payment entered successfully!");
+      return $response
+       ->withHeader('content-type', 'application/json')
+       ->withStatus(200);
+    }
+  } catch (PDOException $e) {
+    $error = array(
+      "message" => $e->getMessage()
+    );
+ 
+    $response->getBody()->write(json_encode($error));
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus(500);
+  }
 });
 
 
