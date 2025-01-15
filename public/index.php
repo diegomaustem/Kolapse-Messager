@@ -31,7 +31,6 @@ $app->addRoutingMiddleware();
  */
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
-// NEW CODE ::: 
 $dataBaseConnectionInstance = new ConnectionDatabase();
 $connection = $dataBaseConnectionInstance->openConnect();
 
@@ -40,52 +39,7 @@ $paymentController = new PaymentController($paymentRepository);
 
 $dataBaseConnectionInstance->closeConnect();
 
-// Routes :::
 $app->get('/listPayments', [$paymentController, 'listPayments']);
 $app->post('/makePayment', [$paymentController, 'makePayment']);
-
-
-// END  NEW CODE ::: 
-
-// $app->post('/makePayment', function (Request $request, Response $response, array $args) {
-//   $data = json_decode($request->getBody(), true);
-
-//   $query = "INSERT INTO payments (name, card_number, validity, date, security_code, value, status, email) VALUES (:name, :card_number, :validity, :date, :security_code, :value, :status, :email)";
-
-//   try {
-//     $dataBaseConnectionInstance = new Database();
-//     $connection = $dataBaseConnectionInstance->openConnect();
-//     $statament  = $connection->prepare($query);
-
-//     $statament->bindParam(':name', $data['name']);
-//     $statament->bindParam(':card_number', $data['card_number']);
-//     $statament->bindParam(':validity', $data['validity']);
-//     $statament->bindParam(':date', $data['date']);
-//     $statament->bindParam(':security_code', $data['security_code']);
-//     $statament->bindParam(':value', $data['value']);
-//     $statament->bindParam(':status', $data['status']);
-//     $statament->bindParam(':email', $data['email']);
-
-//     $resultQuery = $statament->execute();
-
-//     $dataBaseConnectionInstance->closeConnect();
-
-//     if($resultQuery === true) {
-//       $response->getBody()->write("Payment entered successfully!");
-//       return $response
-//        ->withHeader('content-type', 'application/json')
-//        ->withStatus(200);
-//     }
-//   } catch (PDOException $e) {
-//     $error = array(
-//       "message" => $e->getMessage()
-//     );
- 
-//     $response->getBody()->write(json_encode($error));
-//     return $response
-//       ->withHeader('content-type', 'application/json')
-//       ->withStatus(500);
-//   }
-// });
 
 $app->run();

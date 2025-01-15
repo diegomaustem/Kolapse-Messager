@@ -1,17 +1,17 @@
 <?php 
 
-namespace App\Models;
+namespace Config;
 
 use Dotenv\Dotenv;
 use PDO;
 use PDOException;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
+$dotenv = Dotenv::createImmutable(__DIR__ . '../../');
 $dotenv->load();
 
-class Database
+class ConnectionDatabase
 {
     private $host;
     private $dbname;
@@ -37,7 +37,7 @@ class Database
 
             $this->pdo = new PDO($connection_string, $this->user, $this->pass);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
+            
             return $this->pdo;
         } catch (PDOException $e) {
             echo "Connection refused." . $e->getMessage();
