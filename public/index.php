@@ -1,9 +1,9 @@
 <?php
+
+use App\Models\Database;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
-use \PDO;
-use \PDOException;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -29,8 +29,31 @@ $app->addRoutingMiddleware();
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
 $app->get('/listPayments', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("API Running");
-    return $response;
+
+  $query = "SELECT * FROM payments";
+
+  try{
+    $dataBaseConnectionInstance = new Database();
+
+    $connection = $dataBaseConnectionInstance->openConnect();
+    $statament = $connection->query($query);
+    $payments = $statament->fetchAll(PDO::FETCH_OBJ);
+
+    $dataBaseConnectionInstance->closeConnect();
+
+    $response->getBody()->write(json_encode($payments));
+
+    return $response->withHeader('content-type', 'application/json')
+      ->withStatus(200);
+  } catch(PDOException $e) {
+    $error = array("message" => $e->getMessage());
+
+    $response->getBody()->write(json_encode($error));
+
+    return $response
+      ->withHeader('content-type', 'application/json')
+      ->withStatus(500);
+  }
 });
 
 $app->post('/makePayment', function (Request $request, Response $response, $args) {
