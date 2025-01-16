@@ -8,8 +8,6 @@ use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-require __DIR__ . '../../config/ConnectionDatabase.php';
-
 $app = AppFactory::create();
 
 /**
