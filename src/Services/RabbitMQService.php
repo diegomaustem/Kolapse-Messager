@@ -11,26 +11,39 @@ class RabbitMQService
 {
     private $rabbitMQConnectionInstance;
     private $channelRBMQ;
-    private $queueName = 'payments';
+    private $sendingData;
 
-    public function __construct()
+    private $queues = [
+        'paidUsers_queue',
+        'shoppingStores_queue',
+        'cardUnit_queue'
+    ];
+
+    public function __construct($sendingData)
     {
+        $this->sendingData = json_decode($sendingData);
+
         $this->rabbitMQConnectionInstance = new ConnectionRBMQ();
 
-        $this->rabbitMQConnectionInstance->declareQueue($this->queueName);
-
         $this->channelRBMQ = $this->rabbitMQConnectionInstance->getChannel();
+
+        $this->publishMessages($this->sendingData, $this->queues);
+
+        $this->rabbitMQConnectionInstance->closeConnect();
     }
 
-    public function sendMessage($message, $queueName) 
+    public function publishMessages($message, $queueName) 
     {
-        // Declarar a fila
-        $this->channelRBMQ->queue_declare($queueName, false, true, false, false);
-        
-        // Criar a mensagem
-        $msg = new AMQPMessage($message);
-        
-        // Enviar a mensagem
-        $this->channelRBMQ->basic_publish($msg, '', $queueName);
-    }
+        foreach($queueName as $queue) {
+            $this->channelRBMQ->queue_declare($queue, false, false, false, false);
+            
+            // Criar a mensagem ::: 
+            $msg = new AMQPMessage(json_encode($message));
+
+            // Envio das mensagens ::: 
+            foreach(range(1, 100) as $i) {
+                $this->channelRBMQ->basic_publish($msg, '', $queue);
+            }
+        }
+    }    
 }

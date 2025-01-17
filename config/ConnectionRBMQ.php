@@ -42,13 +42,6 @@ class ConnectionRBMQ
         } 
     }
 
-    public function declareQueue($queueName)
-    {
-        if($this->channelRBMQ) {
-            $this->channelRBMQ->queue_declare($queueName, false, true, false, false);
-        }
-    }
-
     public function getChannel()
     {
         return $this->channelRBMQ;

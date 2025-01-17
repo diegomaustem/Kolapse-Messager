@@ -39,9 +39,8 @@ class PaymentController
     public function makePayment(Request $request, Response $response) 
     {
         $data = json_decode($request->getBody(), true);
-        $payerEmail = $data['email'];
 
-        $this->callRabbitMQService($payerEmail);die();
+        $this->callRabbitMQService($data);die();
 
         try {
             $resultQuery = $this->paymentRepository->makePayment($data);
@@ -68,14 +67,13 @@ class PaymentController
         }
     }
 
-    private function callRabbitMQService($payerEmail)
+    private function callRabbitMQService($data)
     {
-        // $sendingData = [
-        //     'emailPaidUser' => $payerEmail,
-        //     'emailShoppingStore' => 'emailstore@gmail.com',
-        //     'emailCardUnit' => 'cardunit@gmail.com'
-        // ];
-
-        $rabbitMQService = new RabbitMQService();
+        $sendingData = [
+            'message' => "Your payment has been made!",
+            'value' => $data['value'],
+            'status' => $data['status'],
+        ];
+        $rabbitMQService = new RabbitMQService(json_encode($sendingData));
     }
 }
