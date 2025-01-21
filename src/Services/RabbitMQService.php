@@ -13,12 +13,6 @@ class RabbitMQService
     private $channelRBMQ;
     private $sendingData;
 
-    private $queues = [
-        'paidUsers_queue',
-        'shoppingStores_queue',
-        'cardUnit_queue'
-    ];
-
     public function __construct($sendingData)
     {
         $this->sendingData = json_decode($sendingData);
@@ -27,23 +21,38 @@ class RabbitMQService
 
         $this->channelRBMQ = $this->rabbitMQConnectionInstance->getChannel();
 
-        $this->publishMessages($this->sendingData, $this->queues);
+        $this->publishMessages($this->sendingData);
 
         $this->rabbitMQConnectionInstance->closeConnect();
     }
 
-    public function publishMessages($message, $queueName) 
+    public function publishMessages($message) 
     {
-        foreach($queueName as $queue) {
-            $this->channelRBMQ->queue_declare($queue, false, false, false, false);
-            
-            // Criar a mensagem ::: 
-            $msg = new AMQPMessage(json_encode($message));
+        // Direct :::  
+        // $exchange = 'payment_users_direct';
+        // $this->channelRBMQ->exchange_declare($exchange, 'direct', false, true, false);
 
-            // Envio das mensagens ::: 
-            foreach(range(1, 100) as $i) {
-                $this->channelRBMQ->basic_publish($msg, '', $queue);
-            }
-        }
+        // $routes_keys = [
+        //     'generate_contract' => 'generate_contract_key',
+        //     'notify_payment' => 'notify_payment_key'
+        // ];
+
+        // foreach($routes_keys as $key) {
+        //     $msg = new AMQPMessage(json_encode($message), $key);
+
+        //     foreach(range(1, 100) as $i) {
+        //         $this->channelRBMQ->basic_publish($msg, $exchange, $key);
+        //     }
+        // }
+
+        // Fanout :::
+        $exchange = 'payment_users_fanout';
+        $this->channelRBMQ->exchange_declare($exchange, 'fanout', false, true, false);
+
+        $msg = new AMQPMessage(json_encode($message));
+
+        foreach(range(1, 300) as $i) {
+            $this->channelRBMQ->basic_publish($msg, $exchange);
+        }  
     }    
 }
