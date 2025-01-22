@@ -29,15 +29,7 @@ $app->addRoutingMiddleware();
  */
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
-$dataBaseConnectionInstance = new ConnectionDatabase();
-$connection = $dataBaseConnectionInstance->openConnect();
-
-$paymentRepository = new PaymentRepository($connection);
-$paymentController = new PaymentController($paymentRepository);
-
-$dataBaseConnectionInstance->closeConnect();
-
-$app->get('/listPayments', [$paymentController, 'listPayments']);
-$app->post('/makePayment', [$paymentController, 'makePayment']);
+$app->get('/listPayments', [PaymentController::class, 'listPayments']);
+$app->post('/makePayment', [PaymentController::class, 'makePayment']);
 
 $app->run();
