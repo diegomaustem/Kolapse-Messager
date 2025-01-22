@@ -78,9 +78,10 @@ class PaymentController
     {
         $sendingData = [
             'message' => "Your payment has been made!",
-            'value' => $data['value'],
-            'status' => $data['status'],
-        ];
+            'value'   => $data['value'],
+            'status'  => $data['status'],
+            'email'   => $data['email']
+         ];
         $rabbitMQService = new RabbitMQService(json_encode($sendingData));
     }
 }
