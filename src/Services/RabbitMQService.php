@@ -51,7 +51,7 @@ class RabbitMQService
 
         $msg = new AMQPMessage(json_encode($message));
 
-        foreach(range(1, 300) as $i) {
+        foreach(range(1, 2) as $i) {
             $this->channelRBMQ->basic_publish($msg, $exchange);
         }  
     }    

@@ -50,7 +50,9 @@ class PaymentController
 
         $dataBaseConnectionInstance->closeConnect();
 
-        $this->callRabbitMQService($data);die();
+        $this->callRabbitMQService($data);
+
+        die();
 
         try {
             $resultQuery = $this->paymentRepository->makePayment($data);
@@ -78,6 +80,7 @@ class PaymentController
     {
         $sendingData = [
             'message' => "Your payment has been made!",
+            'name'    => $data['name'],
             'value'   => $data['value'],
             'status'  => $data['status'],
             'email'   => $data['email']
