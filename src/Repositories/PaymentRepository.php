@@ -1,11 +1,11 @@
 <?php 
+declare(strict_types=1);
 namespace App\Repositories;
 
-use App\Models\Payment;
 use PDO;
 use PDOException;
 
-class PaymentRepository
+class PaymentRepository implements PaymentRepositoryInterface
 {
     private $connection;
 
@@ -14,7 +14,7 @@ class PaymentRepository
         $this->connection = $connection;
     }
 
-    public function listPayments()
+    public function listPayments(): array
     {
         $query = "SELECT * FROM payments";
 
@@ -24,7 +24,7 @@ class PaymentRepository
         return $payments;
     }
 
-    public function makePayment($payment) 
+    public function makePayment($payment): bool
     {
         $query = "INSERT INTO payments (name, card_number, validity, date, security_code, value, status, email) VALUES (:name, :card_number, :validity, :date, :security_code, :value, :status, :email)";
 

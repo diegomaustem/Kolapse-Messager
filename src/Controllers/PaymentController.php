@@ -5,6 +5,7 @@ use App\Models\Payment;
 use App\Repositories\PaymentRepository;
 use App\Services\RabbitMQService;
 use Config\ConnectionDatabase;
+use PaymentRepositoryInterface;
 use PDOException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -50,15 +51,10 @@ class PaymentController
 
         $dataBaseConnectionInstance->closeConnect();
 
-        $this->callRabbitMQService($data);
-
-        die();
-
         try {
             $resultQuery = $this->paymentRepository->makePayment($data);
             if($resultQuery === true) {
-                // Rabbit here bellow ::: 
-                // $this->callRabbitMQService($payerEmail);
+                $this->callRabbitMQService($data);
                 $response->getBody()->write("Payment entered successfully!");
                     return $response
                         ->withHeader('content-type', 'application/json')
