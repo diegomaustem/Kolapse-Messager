@@ -1,5 +1,4 @@
 <?php 
-
 namespace App\Routes;
 
 use App\Controllers\PaymentController;
