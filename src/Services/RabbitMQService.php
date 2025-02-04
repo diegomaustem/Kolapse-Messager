@@ -1,9 +1,7 @@
 <?php 
-
 namespace App\Services;
 
 use Config\ConnectionRBMQ;
-
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 

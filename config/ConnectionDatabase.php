@@ -16,6 +16,7 @@ class ConnectionDatabase
     private $dbname;
     private $user;
     private $pass;
+    private $port;
 
     private $pdo;
 
@@ -25,6 +26,7 @@ class ConnectionDatabase
         $this->dbname = $_ENV['DB_NAME'];
         $this->user   = $_ENV['DB_USER'];
         $this->pass   = $_ENV['DB_PASS'];
+        $this->port   = $_ENV['DB_PORT'];
 
         $this->openConnect();
     }
@@ -32,7 +34,7 @@ class ConnectionDatabase
     public function openConnect()
     {
         try {
-            $connection_string = "pgsql:host=$this->host;dbname=$this->dbname";
+            $connection_string = "pgsql:host=$this->host;port=$this->port;dbname=$this->dbname";
 
             $this->pdo = new PDO($connection_string, $this->user, $this->pass);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
